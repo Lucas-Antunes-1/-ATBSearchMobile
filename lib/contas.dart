@@ -107,10 +107,10 @@ RegExp emailRegex = RegExp(
                   backgroundImage:AssetImage(_imagemCaminho),
                   backgroundColor: Colors.grey[300],
                 ),
-              ),SizedBox(width: 4,),Text(_nome.text,style: TextStyle(fontSize: 25),)]),
+              ),SizedBox(width: 4,),Text(Login.getatual.getNome,style: TextStyle(fontSize: 25),)]),
               const SizedBox(height: 30),
-Row(mainAxisAlignment: MainAxisAlignment.center,children: [Text("Email:"+_email.text,style: TextStyle(fontSize: 14),)],),SizedBox(height: 20,),
-Row(mainAxisAlignment: MainAxisAlignment.center,children: [Text("Telefone:"+(_telefone.text!=""?_telefone.text:"Sem Cadastro de Telefone"),style: TextStyle(fontSize: 14),)],),SizedBox(height: 20,),
+Row(mainAxisAlignment: MainAxisAlignment.center,children: [Text("Email:"+Login.getatual.getEmail,style: TextStyle(fontSize: 14),)],),SizedBox(height: 20,),
+Row(mainAxisAlignment: MainAxisAlignment.center,children: [Text("Telefone:"+(Login.getatual.getTelefone!=""?Login.getatual.getTelefone:"Sem Cadastro de Telefone"),style: TextStyle(fontSize: 14),)],),SizedBox(height: 20,),
 Row(mainAxisAlignment: MainAxisAlignment.center,children: [
       
    GestureDetector(
@@ -396,7 +396,7 @@ Form(child:
           key: _formKey, 
           child: TextFormField(
             controller: _telefone,
-            decoration: const InputDecoration(labelText: "Novo telefone"),
+            decoration: const InputDecoration(hintText: "(XX) XXXXX-XXXX",labelText: "Novo telefone"),
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Campo obrigatório';
@@ -543,6 +543,7 @@ Form(child:
                     ),
                     TextButton(
                       onPressed: ()  {
+                        Login.ls(true);
                         Login.setH(0);
                         Login.setF(false);
                         Login.setT("Faça login para ter suas tabelas salvas");
@@ -612,7 +613,8 @@ Form(child:
                     TextButton(
                       onPressed: ()  {
                         if(_k3.currentState!.validate())
-                        {  Login.setH(0);
+                        { Login.ls(true); 
+                          Login.setH(0);
                         Login.setF(false);
                         Login.setT("Faça login para ter suas tabelas salvas");
                        Login.deletar(Login.getatual);
