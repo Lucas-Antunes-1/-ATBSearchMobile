@@ -31,7 +31,7 @@ RegExp emailRegex = RegExp(
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-            appBar: AppBar(title: const Text('Cadastro'),backgroundColor: Login.getap,),
+            appBar: AppBar(title: const Text('Cadastro',style: TextStyle(color: Colors.white),),backgroundColor: Login.getap,),
   drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,

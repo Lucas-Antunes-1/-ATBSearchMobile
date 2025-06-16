@@ -15,7 +15,9 @@ class contas extends StatefulWidget {
 
 class _ContasState extends State<contas> {
   final _formKey = GlobalKey<FormState>();
+  final _k3 = GlobalKey<FormState>();
   final TextEditingController _senha1 = TextEditingController();
+  final TextEditingController _senha3 = TextEditingController();
   final TextEditingController _nome = TextEditingController(text: Login.getatual.getNome);
   final TextEditingController _email = TextEditingController(text: Login.getatual.getEmail);
   final TextEditingController _telefone = TextEditingController(text: Login.getatual.getTelefone);
@@ -116,7 +118,7 @@ Row(mainAxisAlignment: MainAxisAlignment.center,children: [
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text("Alterar email de perfil"),
+        title: const Text("Alterar Conta"),
         content:SingleChildScrollView(padding: EdgeInsets.all(20),child: ConstrainedBox(
           constraints: BoxConstraints(maxWidth: 400),
          child: Form(key: _formKey,child: Column(children: [
@@ -452,7 +454,8 @@ Form(child:
         title: Text("Alterar senha"),
         content: Form(
           key: _formKey, 
-          child:Container(child: Column(mainAxisSize: MainAxisSize.min,children: [TextFormField(obscureText: true,
+          child:Container(child: Column(mainAxisSize: MainAxisSize.min,children: [
+            TextFormField(obscureText: true,
             controller: _senha,
             decoration: const InputDecoration(labelText: "Nova senha"),
             validator: (value) {
@@ -532,7 +535,7 @@ Form(child:
             context: context,
             builder:
                 (BuildContext context) => AlertDialog(
-                  title: const Text('Deseja deletar mesmo?'),
+                  title: const Text('Deseja Sair da conta?'),
                   actions: <Widget>[
                     TextButton(
                       onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -566,13 +569,41 @@ Form(child:
       ),
     ],
   ),child: Row(children: [Icon(Icons.logout,size: 30,),SizedBox(width: 5,),Text("Sair",style: TextStyle(fontSize: 14),)])
+
+
+
+
+
   ),),SizedBox(height: 20,),
+
+
+
+
            GestureDetector(onTap: () {
                                showDialog<String>(
             context: context,
             builder:
                 (BuildContext context) => AlertDialog(
-                  title: const Text('Deseja sair mesmo?'),
+                  title: const Text('Deseja deletar sua conta?'),
+                  content: Form(key: _k3,child:
+                  Container(child:   Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [  TextFormField(obscureText: true,
+            controller: _senha3,
+            decoration: const InputDecoration(labelText: "Digite sua senha para comfirmar"),
+            validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Por favor, insira uma senha';
+                            }
+                            if(value!=Login.getatual.senha)
+                            {
+                              return "Senha incoreta";
+                            }
+                            return null;
+            },
+          )],
+                  ),)
+                 ),
                   actions: <Widget>[
                     TextButton(
                       onPressed: () => Navigator.pop(context, 'Cancel'),
@@ -580,7 +611,8 @@ Form(child:
                     ),
                     TextButton(
                       onPressed: ()  {
-                        Login.setH(0);
+                        if(_k3.currentState!.validate())
+                        {  Login.setH(0);
                         Login.setF(false);
                         Login.setT("Faça login para ter suas tabelas salvas");
                        Login.deletar(Login.getatual);
@@ -588,6 +620,9 @@ Form(child:
                         Login.setDratual([["Início",Comeco(),Icons.start],["Tabelas salvas",Login.nuv(Login.getF),Icons.cloud],["Tabela",Tabela(),Icons.table_chart],["Login",Tela1(),Icons.app_registration],["Cadastro",Tela2(),Icons.login]]);
                         Navigator.pushReplacement(context, MaterialPageRoute(builder: 
                         (context) => Tela1()));
+                        }
+
+                      
                   },
                       child: const Text('Deletar'),
                     ),
