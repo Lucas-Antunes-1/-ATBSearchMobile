@@ -319,6 +319,7 @@ RegExp emailRegex = RegExp(
        Login.setT("Sem nenhuma tabela salva");
         Login.ls(true);
       Login.adiciona(l);
+      print(Login.getlista[Login.getatual]![2]);
       Login.setDratual([["Início",Comeco(),Icons.start],["Tabelas salvas",Login.nuv(Login.getF),Icons.cloud],["Tabela",Tabela(),Icons.table_chart],["Sua conta",contas(),Icons.face_3]]);
       Login.setH(1);
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Tabela()));

@@ -22,7 +22,7 @@ class _NuvemState extends State<Nuvem2> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("Tabelas salvas na nuvem"),
+        title: Text("Tabelas salvas na nuvem",style: TextStyle(color: Colors.white),),
         centerTitle: true, backgroundColor: Login.getap,),
    drawer: Drawer(
         child: ListView(

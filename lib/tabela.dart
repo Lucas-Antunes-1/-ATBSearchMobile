@@ -318,7 +318,7 @@ class _AntibioticScreenState extends State<AntibioticScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Filtrar Antibióticos'),backgroundColor: Login.getap,),
+      appBar: AppBar(title: const Text('Filtrar Antibióticos',style: TextStyle(color: Colors.white),),backgroundColor: Login.getap,),
    drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,

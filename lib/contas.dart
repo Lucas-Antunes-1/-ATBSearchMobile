@@ -38,7 +38,7 @@ RegExp emailRegex = RegExp(
   Widget build(BuildContext context) {
     return Scaffold(
   appBar: AppBar(
-        title: Text("ATBSearch"),
+        title: Text("ATBSearch",style: TextStyle(color: Colors.white),),
         centerTitle: true, backgroundColor: Login.getap,),
    drawer: Drawer(
         child: ListView(
