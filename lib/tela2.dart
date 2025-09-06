@@ -15,9 +15,9 @@ class Tela2 extends StatefulWidget {
 
 class _Tela1State extends State<Tela2> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _email = TextEditingController();
-  final TextEditingController _senha = TextEditingController();
-  final TextEditingController _nome = TextEditingController();
+  final TextEditingController _email = TextEditingController(text: "gmail@gmail.com");
+  final TextEditingController _senha = TextEditingController(text: "123456");
+  final TextEditingController _nome = TextEditingController(text: "nome");
   final TextEditingController _telefone = TextEditingController();
     static final RegExp phoneRegex = RegExp(
     r'^\(\d{2}\)\s\d{4,5}-\d{4}$',
@@ -316,10 +316,10 @@ RegExp emailRegex = RegExp(
         _senha.text
       );
 
+      Login.setAtual(l);
        Login.setT("Sem nenhuma tabela salva");
         Login.ls(true);
       Login.adiciona(l);
-      print(Login.getlista[Login.getatual]![2]);
       Login.setDratual([["Início",Comeco(),Icons.start],["Tabelas salvas",Login.nuv(Login.getF),Icons.cloud],["Tabela",Tabela(),Icons.table_chart],["Sua conta",contas(),Icons.face_3]]);
       Login.setH(1);
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Tabela()));

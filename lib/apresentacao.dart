@@ -11,14 +11,13 @@ class Comeco extends StatefulWidget {
 class _ComecoState extends State<Comeco> {
    final GlobalKey _k1 = GlobalKey();
 
-  List<List<Object>> lis = Login.getLs;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
+      appBar: AppBar(automaticallyImplyLeading: false,
         backgroundColor: Login.getap, 
-        elevation: 0,
+        
                title: Row(
           children: [
             Image.asset(
@@ -51,15 +50,15 @@ class _ComecoState extends State<Comeco> {
         ),
       ),
     ),SizedBox()]+
-    List.generate(lis.length, (index)
+    List.generate(Login.getLs.length, (index)
     {
    return Row(children: [
      TextButton(
       onPressed: () { Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => lis[index][1] as Widget)
+            MaterialPageRoute(builder: (context) => Login.getLs[index][1] as Widget)
           );}, 
       child: Text(
-        lis[index][0] as String,
+        Login.getLs[index][0] as String,
         style: const TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,

@@ -28,7 +28,7 @@ class Login
       {
         lis=[["Tabela",Tabela()],["Gerenciar Conta",contas()]];
       }
-      else
+      if(!a)
       {
          lis = [["Tabela",Tabela()],["Login",Tela1()],["Cadastro",Tela2()]];
       }

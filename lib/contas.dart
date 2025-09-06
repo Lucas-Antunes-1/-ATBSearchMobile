@@ -74,12 +74,14 @@ RegExp emailRegex = RegExp(
                     ),
                     TextButton(
                       onPressed: ()  {
-                        Login.ls(false);
                         Login.setH(0);
                         Login.setF(false);
                         Login.setT("Faça login para ter suas tabelas salvas");
                         Login.setAtual(Login());
                         Login.setDratual([["Início",Comeco(),Icons.start],["Tabelas salvas",Login.nuv(Login.getF),Icons.cloud],["Tabela",Tabela(),Icons.table_chart],["Login",Tela1(),Icons.app_registration],["Cadastro",Tela2(),Icons.login]]);
+                        setState(() {
+                        Login.ls(false);
+                        });
                         Navigator.pushReplacement(context, MaterialPageRoute(builder: 
                         (context) => Tela1()));
                   },
@@ -543,14 +545,15 @@ Form(child:
                     ),
                     TextButton(
                       onPressed: ()  {
-                        Login.ls(true);
+                        Login.ls(false);
                         Login.setH(0);
                         Login.setF(false);
                         Login.setT("Faça login para ter suas tabelas salvas");
                         Login.setAtual(Login());
                         Login.setDratual([["Início",Comeco(),Icons.start],["Tabelas salvas",Login.nuv(Login.getF),Icons.cloud],["Tabela",Tabela(),Icons.table_chart],["Login",Tela1(),Icons.app_registration],["Cadastro",Tela2(),Icons.login]]);
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: 
-                        (context) => Tela1()));
+                        Navigator.of(context).pushReplacement(
+                          MaterialPageRoute(builder: (context)=>Tela1())
+                        );
                   },
                       child: const Text('Sair'),
                     ),

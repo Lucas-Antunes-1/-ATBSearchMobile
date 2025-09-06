@@ -17,8 +17,8 @@ class Tela1 extends StatefulWidget {
 
 class _Tela1State extends State<Tela1> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _email = TextEditingController();
-  final TextEditingController _senha = TextEditingController();
+  final TextEditingController _email = TextEditingController(text: "email@gmail.com");
+  final TextEditingController _senha = TextEditingController(text: "123456");
 RegExp emailRegex = RegExp(
   r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
   caseSensitive: false,
