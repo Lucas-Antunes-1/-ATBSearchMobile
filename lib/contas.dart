@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/BackEnd.dart';
 import 'package:flutter_application_1/apresentacao.dart';
 import 'package:flutter_application_1/dados.dart';
 import 'package:flutter_application_1/nuvem.dart';
@@ -18,13 +19,33 @@ class _ContasState extends State<contas> {
   final _k3 = GlobalKey<FormState>();
   final TextEditingController _senha1 = TextEditingController();
   final TextEditingController _senha3 = TextEditingController();
-  final TextEditingController _nome = TextEditingController(text: Login.getatual.getNome);
+  final TextEditingController _nome = TextEditingController(text: Login.getatual.getUsername);
   final TextEditingController _email = TextEditingController(text: Login.getatual.getEmail);
   final TextEditingController _telefone = TextEditingController(text: Login.getatual.getTelefone);
   final TextEditingController _senha = TextEditingController();
   final TextEditingController _senha2 = TextEditingController();
-   String _imagemCaminho = Login.getatual.getIMG!=""? Login.getatual.getIMG : "images/th.jpeg";
+   String _imagemCaminho = "images/th.jpeg";
   bool y=true;
+
+  @override
+  void initState() {  
+     carregarAntibiotico();
+    super.initState();
+ 
+  }
+
+void carregarAntibiotico() async {
+  final resultado =
+      (await TabelaBackEnd.buscarPorIndice(Login.getatual.getId)).keys.toList();
+  setState(() {
+    listaTabelas = resultado;
+  });
+}
+
+
+     List<String> listaTabelas =  [];
+    Usuario u=Login.getatual;
+
 
 RegExp emailRegex = RegExp(
   r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
@@ -74,14 +95,13 @@ RegExp emailRegex = RegExp(
                     ),
                     TextButton(
                       onPressed: ()  {
+                        Login.ls(false);
                         Login.setH(0);
                         Login.setF(false);
                         Login.setT("Faça login para ter suas tabelas salvas");
-                        Login.setAtual(Login());
+                        Login.setAtual(Usuario(id: 0, 
+                        username: "", senha: "", pagoVersaoPro: false, telefone: "", email: "", userId: 0));
                         Login.setDratual([["Início",Comeco(),Icons.start],["Tabelas salvas",Login.nuv(Login.getF),Icons.cloud],["Tabela",Tabela(),Icons.table_chart],["Login",Tela1(),Icons.app_registration],["Cadastro",Tela2(),Icons.login]]);
-                        setState(() {
-                        Login.ls(false);
-                        });
                         Navigator.pushReplacement(context, MaterialPageRoute(builder: 
                         (context) => Tela1()));
                   },
@@ -101,15 +121,13 @@ RegExp emailRegex = RegExp(
             children: [Text("Gerenciar Conta",style: TextStyle(fontSize: 45,fontWeight: FontWeight.bold),),SizedBox(height: 30,)
             ,
              Row(mainAxisAlignment: MainAxisAlignment.center,children:[ GestureDetector(
-                onTap: () {
-                  _mostrarDialogoImagem();
-                },
+               
                 child: CircleAvatar(
                   radius: 30,
                   backgroundImage:AssetImage(_imagemCaminho),
                   backgroundColor: Colors.grey[300],
                 ),
-              ),SizedBox(width: 4,),Text(Login.getatual.getNome,style: TextStyle(fontSize: 25),)]),
+              ),SizedBox(width: 4,),Text(Login.getatual.getUsername,style: TextStyle(fontSize: 25),)]),
               const SizedBox(height: 30),
 Row(mainAxisAlignment: MainAxisAlignment.center,children: [Text("Email:"+Login.getatual.getEmail,style: TextStyle(fontSize: 14),)],),SizedBox(height: 20,),
 Row(mainAxisAlignment: MainAxisAlignment.center,children: [Text("Telefone:"+(Login.getatual.getTelefone!=""?Login.getatual.getTelefone:"Sem Cadastro de Telefone"),style: TextStyle(fontSize: 14),)],),SizedBox(height: 20,),
@@ -194,17 +212,17 @@ Row(mainAxisAlignment: MainAxisAlignment.center,children: [
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
                               if (_formKey.currentState!.validate()) {
 
-                                  for(Login a in Login.getlista.keys)
+                                  for(Usuario a in await Usuario.CarregaUsuarios())
                                   {
                                     if(((a.getEmail==_email.text)||(a.getTelefone==_email.text))&&(a.getSenha==_senha2.text))
                                     {
                                        y=false;
                                      Login.setAtual(a);
                                      Login.setH(1);
-                                    if(Login.getNuvem(a)!.isNotEmpty)
+                                    if((await TabelaBackEnd.buscarPorIndice(a.getId)).keys.toList().isEmpty)
                                     {
                                       Login.setF(true);
                                       Login.setJ(0);
@@ -304,14 +322,17 @@ showDialog<String>(
             child: const Text("Cancelar"),
           ),
           TextButton(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                setState(() {
-                  Login.getatual.setEmail(_email.text);
-                  Navigator.pop(context);
-                });
-              }
-            },
+              onPressed: () async {
+  Navigator.pop(context);
+ Usuario.mudarEmailUsuario(Login.getatual.getId, _email.text);
+   await Login.AtualizaAtual();
+  print(Login.getatual.getUsername);
+  setState(() {}); 
+    await Login.AtualizaAtual();
+  print(Login.getatual.getUsername);
+  setState(() {}); 
+}
+            ,
             child: const Text("Salvar"),
           ),
         ],
@@ -347,17 +368,23 @@ Form(child:
                     TextButton(
             onPressed: () { Navigator.pop(context);
             setState(() {
-              _nome.text=Login.getatual.getNome;
+              _nome.text=Login.getatual.getUsername;
             });
             },
             child: const Text("Cancelar"),
           ),
           TextButton(
-            onPressed: ()  {Navigator.pop(context);
-            setState(() {
-              Login.getatual.setnome(_nome.text);
-            });
-            },
+            onPressed: () async {
+  Navigator.pop(context);
+  Usuario.mudarNomeUsuarioValidado(Login.getatual.getId, _nome.text);
+  await Login.AtualizaAtual();
+  print(Login.getatual.getUsername);
+  setState(() {}); 
+    await Login.AtualizaAtual();
+  print(Login.getatual.getUsername);
+  setState(() {}); 
+}
+,
             child: const Text("Salvar"),
           ),
         ],
@@ -421,14 +448,17 @@ Form(child:
             child: const Text("Cancelar"),
           ),
           TextButton(
-            onPressed: () {
-              if (_formKey.currentState!.validate()) {
-                setState(() {
-                  Login.getatual.setTelefone(_telefone.text);
-                  Navigator.pop(context);
-                });
-              }
-            },
+                        onPressed: () async {
+  Navigator.pop(context);
+  Usuario.mudarTelefoneUsuarioValidado(Login.getatual.getId, _telefone.text);
+  await Login.AtualizaAtual();
+  print(Login.getatual.getUsername);
+  setState(() {}); 
+    await Login.AtualizaAtual();
+  print(Login.getatual.getUsername);
+  setState(() {}); 
+}
+            ,
             child: const Text("Salvar"),
           ),
         ],
@@ -498,15 +528,22 @@ Form(child:
             child: const Text("Cancelar"),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
               if (_formKey.currentState!.validate()) {
                 setState(() {
-                  Login.getatual.setSenha(_senha.text);
+                  Usuario.mudarSenhaUsuarioValidado(Login.getatual.getId, _senha.text, _senha.text);
                   Navigator.pop(context);
                   _senha1.text="";
                   _senha.text="";
                 });
-              }
+
+  await Login.AtualizaAtual();
+  print(Login.getatual.getUsername);
+  setState(() {}); 
+    await Login.AtualizaAtual();
+  print(Login.getatual.getUsername);
+  setState(() {}); 
+}
             },
             child: const Text("Salvar"),
           ),
@@ -530,7 +567,7 @@ Form(child:
   )
               ],),
               SizedBox(height: 20,),
-              Text("Número de tabelas personalizadas:"+(Login.acha(Login.getatual)!=null?(Login.acha(Login.getatual).length).toString():"Sem tabelas")),
+              Text("Número de tabelas personalizadas:"+(listaTabelas!=[]?listaTabelas.length.toString():"Sem tabelas")),
               SizedBox(height: 20,),
               GestureDetector(onTap: () {
                                showDialog<String>(
@@ -545,15 +582,15 @@ Form(child:
                     ),
                     TextButton(
                       onPressed: ()  {
-                        Login.ls(false);
+                        Login.ls(true);
                         Login.setH(0);
                         Login.setF(false);
                         Login.setT("Faça login para ter suas tabelas salvas");
-                        Login.setAtual(Login());
+                        Login.setAtual(Usuario(id: 0, 
+                        username: "", senha: "", pagoVersaoPro: false, telefone: "", email: "", userId: 0));
                         Login.setDratual([["Início",Comeco(),Icons.start],["Tabelas salvas",Login.nuv(Login.getF),Icons.cloud],["Tabela",Tabela(),Icons.table_chart],["Login",Tela1(),Icons.app_registration],["Cadastro",Tela2(),Icons.login]]);
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (context)=>Tela1())
-                        );
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: 
+                        (context) => Tela1()));
                   },
                       child: const Text('Sair'),
                     ),
@@ -614,14 +651,15 @@ Form(child:
                       child: const Text('Continuar logado'),
                     ),
                     TextButton(
-                      onPressed: ()  {
+                      onPressed: ()  async {
                         if(_k3.currentState!.validate())
                         { Login.ls(true); 
                           Login.setH(0);
                         Login.setF(false);
                         Login.setT("Faça login para ter suas tabelas salvas");
-                       Login.deletar(Login.getatual);
-                        Login.setAtual(Login());
+                     await Usuario.deletarUsuarioComConfirmacao(context, Login.getatual.getId, Login.getatual.getUsername);
+                        Login.setAtual(Usuario(id: 0, 
+                        username: "", senha: "", pagoVersaoPro: false, telefone: "", email: "", userId: 0));
                         Login.setDratual([["Início",Comeco(),Icons.start],["Tabelas salvas",Login.nuv(Login.getF),Icons.cloud],["Tabela",Tabela(),Icons.table_chart],["Login",Tela1(),Icons.app_registration],["Cadastro",Tela2(),Icons.login]]);
                         Navigator.pushReplacement(context, MaterialPageRoute(builder: 
                         (context) => Tela1()));
@@ -688,7 +726,6 @@ onChanged: (value) {
           TextButton(
             onPressed: () { Navigator.pop(context);
             setState(() {
-              _imagemCaminho=Login.getatual.getIMG!=""?Login.getatual.getIMG:"images/th.jpeg";
             });
             },
             child: const Text("Cancelar"),
@@ -698,7 +735,6 @@ onChanged: (value) {
               Navigator.pop(context);
               setState(() {
                 
-                Login.getatual.setimgConta(_imagemCaminho);
                             });
               },
             child: const Text("Salvar"),

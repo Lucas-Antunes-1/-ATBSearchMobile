@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/BackEnd.dart';
 import 'package:flutter_application_1/apresentacao.dart';
 import 'package:flutter_application_1/contas.dart';
 import 'package:flutter_application_1/dados.dart';
@@ -17,8 +18,8 @@ class Tela1 extends StatefulWidget {
 
 class _Tela1State extends State<Tela1> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _email = TextEditingController(text: "email@gmail.com");
-  final TextEditingController _senha = TextEditingController(text: "123456");
+  final TextEditingController _email = TextEditingController(text: "user2@example.com");
+  final TextEditingController _senha = TextEditingController(text: "Oe5OpyYuwpgm5vRwENoHvw==:24hKwYHuWBb/fjDIPcGIFRTj7nEH+M+IskY2MAzb3e8=");
 RegExp emailRegex = RegExp(
   r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
   caseSensitive: false,
@@ -28,6 +29,24 @@ RegExp emailRegex = RegExp(
   );
   int h=0;
   bool y=true;
+
+  List<Usuario> usuarios=[];
+
+ @override
+  void initState() {  
+     carregarAntibiotico();
+    super.initState();
+ 
+  }
+
+  void carregarAntibiotico() async {
+    final resultado = await Usuario.CarregaUsuarios();
+    setState(() {
+      usuarios = resultado;
+    });
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +90,7 @@ RegExp emailRegex = RegExp(
                         Login.setH(0);
                         Login.setF(false);
                         Login.setT("Faça login para ter suas tabelas salvas");
-                        Login.setAtual(Login());
+                        Login.setAtual(Usuario(id: 0, username: "", senha: "", pagoVersaoPro: false, telefone: "", email: "", userId: 0));
                         Login.setDratual([["Início",Comeco(),Icons.start],["Tabelas salvas",Login.nuv(Login.getF),Icons.cloud],["Tabela",Tabela(),Icons.table_chart],["Login",Tela1(),Icons.app_registration],["Cadastro",Tela2(),Icons.login]]);
                         Navigator.pushReplacement(context, MaterialPageRoute(builder: 
                         (context) => Tela1()));
@@ -203,10 +222,10 @@ RegExp emailRegex = RegExp(
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () {
+                            onPressed: () async {
                               if (_formKey.currentState!.validate()) {
 
-                                  for(Login a in Login.getlista.keys)
+                                  for(Usuario a in usuarios)
                                   {
                                     if(((a.getEmail==_email.text)||(a.getTelefone==_email.text))&&(a.getSenha==_senha.text))
                                     {
@@ -214,7 +233,7 @@ RegExp emailRegex = RegExp(
                                       Login.ls(true);
                                      Login.setAtual(a);
                                      Login.setH(1);
-                                    if(Login.getNuvem(a)!.isNotEmpty)
+                                    if((await TabelaBackEnd.buscarPorIndice(a.getId)).isNotEmpty)
                                     {
                                       Login.setF(true);
                                       Login.setJ(0);

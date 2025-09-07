@@ -8,16 +8,19 @@ class Comeco extends StatefulWidget {
   State<Comeco> createState() => _ComecoState();
 }
 
-class _ComecoState extends State<Comeco> {
+class _ComecoState extends State<Comeco>{
    final GlobalKey _k1 = GlobalKey();
+  List<List<Object>> lis = Login.getLs;
+  var a;
+
 
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context)  {
     return Scaffold(
-      appBar: AppBar(automaticallyImplyLeading: false,
+      appBar: AppBar(
         backgroundColor: Login.getap, 
-        
+        elevation: 0,
                title: Row(
           children: [
             Image.asset(
@@ -50,15 +53,15 @@ class _ComecoState extends State<Comeco> {
         ),
       ),
     ),SizedBox()]+
-    List.generate(Login.getLs.length, (index)
+    List.generate(lis.length, (index)
     {
    return Row(children: [
      TextButton(
       onPressed: () { Navigator.of(context).pushReplacement(
-            MaterialPageRoute(builder: (context) => Login.getLs[index][1] as Widget)
+            MaterialPageRoute(builder: (context) => lis[index][1] as Widget)
           );}, 
       child: Text(
-        Login.getLs[index][0] as String,
+        lis[index][0] as String,
         style: const TextStyle(
           color: Colors.white,
           fontWeight: FontWeight.bold,
@@ -103,8 +106,8 @@ class _ComecoState extends State<Comeco> {
                         padding: const EdgeInsets.all(16.0),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
-                          children: const [
-                            ExpansionTile(
+                          children: [
+                            const ExpansionTile(
                               title: Text("Qual problema o sistema de saúde enfrenta?",style: TextStyle(fontSize: 16)),
                               children: [
                                 Padding(
@@ -115,13 +118,13 @@ class _ComecoState extends State<Comeco> {
                               ],
                             ),
                             ExpansionTile(
-                              title: Text("Como o ATBSearch pode ajudar?",style: TextStyle(fontSize: 16)),
+                              title: const Text("Como o ATBSearch pode ajudar?",style: TextStyle(fontSize: 16)),
                               children: [
                                 Padding(
-                                  padding: EdgeInsets.all(8.0),
+                                  padding: const EdgeInsets.all(8.0),
                                   child: Text(
-                                    "O ATBSearch é uma plataforma que reune, de forma organizada e acessível, informações atualizadas sobre antibióticos disponíveis no mercado nacional, como sua classe farmacológica e espectro de ação de acordo com as carcaterísticas das bactérias alvo. A consulta é facilitada por um sistema de tabelas com filtros inteligentes, que permite selecionar os medicamentos com base em critérios como tipo e morfologia bacteriana, promovendo maior precisão terapêutica. \n\n A plataforma também foi planejada para ser acessível em diferentes contextos, oferecendo versões online e offline, com diferentes modalidades de uso — desde uma versão gratuita para fins acadêmicos até uma versão avançada voltada a instituições de saúde. \n\nAo integrar tecnologia da informação com fundamentos de farmacologia e gestão em saúde, esta ferramenta busca contribuir diretamente para o enfrentamento da resistência antimicrobiana e para a melhoria da segurança do paciente. ",
-                                style: TextStyle(fontSize: 14), ),
+                                    "O ATBSearch é uma plataforma que reune, de forma organizada e acessível, informações atualizadas sobre antibióticos disponíveis no mercado nacional, como sua classe farmacológica e espectro de ação de acordo com as carcaterísticas das bactérias alvo. A consulta é facilitada por um sistema de tabelas com filtros inteligentes, que permite selecionar os medicamentos com base em critérios como tipo e morfologia bacteriana, promovendo maior precisão terapêutica. \n\n A plataforma também foi planejada para ser acessível em diferentes contextos, oferecendo versões online e offline, com diferentes modalidades de uso — desde uma versão gratuita para fins acadêmicos até uma versão avançada voltada a instituições de saúde. \n\nAo integrar tecnologia da informação com fundamentos de farmacologia e gestão em saúde, esta ferramenta busca contribuir diretamente para o enfrentamento da resistência antimicrobiana e para a melhoria da segurança do paciente.",
+                                style: const TextStyle(fontSize: 14), ),
                                 ),
                               ],
                             ),
@@ -167,12 +170,12 @@ Container(padding: EdgeInsets.all(20),child: Text("As imagens abaixam mostram o 
               style: TextStyle(fontSize: 36, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 15),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 24.0),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Text(
                 "Somos um grupo de estudantes do Cotil que criou essa ferramenta de pesquisa para auxiliar médicos que querem buscar antibióticos com mais precisão.",
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
+                style: const TextStyle(fontSize: 16,fontWeight: FontWeight.bold),
               ),
             ),
 

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/BackEnd.dart';
 import 'package:flutter_application_1/apresentacao.dart';
 import 'package:flutter_application_1/dados.dart';
 import 'package:flutter_application_1/tela1.dart';
@@ -62,7 +63,27 @@ class AntibioticScreen extends StatefulWidget {
 }
 
 class _AntibioticScreenState extends State<AntibioticScreen> {
-  final List<Antibiotic> antibiotics = [
+
+  @override
+  void initState() {  
+     carregarAntibiotico();
+    super.initState();
+ 
+  }
+
+  void carregarAntibiotico() async {
+    final resultado = await Backend.carregarLista();
+    setState(() {
+      antibiotics = resultado;
+    });
+  }
+
+
+
+    List<Antibiotic> antibiotics = [];
+
+
+  /*[
     Antibiotic(id: 1, name: "Azitromicina", type: "Macrolídeos", gramPositive: true, gramNegative: true, morphology: "Bacilos"),
     Antibiotic(id: 2, name: "Claritromicina", type: "Macrolídeos", gramPositive: true, gramNegative: true, morphology: "Bacilos"),
     Antibiotic(id: 3, name: "Oxacilinas", type: "Penicilinas", gramPositive: true, gramNegative: false, morphology: "Cocos"),
@@ -296,7 +317,10 @@ class _AntibioticScreenState extends State<AntibioticScreen> {
     , gramNegative: false
     , morphology: "Bacilos"),
     
-  ];
+  ];*/
+
+
+
 
   final List<String> antibioticTypes = ["Macrolídeos", "Penicilinas","Cefalosporinas","Carbapenêmicos","Aminoglicosídeos","Quinolonas","Anfenicóis","Sulfonamidas","Glicopeptídeos","Nitroimidazólicos","Licosamidas","Polimixinas","Oxazolidinona","Gligilciclina","Antituberculosos"];
   final List<String> morphologyOptions = ["Cocos", "Bacilos", "Cocos e Bacilos"];
@@ -357,7 +381,8 @@ class _AntibioticScreenState extends State<AntibioticScreen> {
                         Login.setH(0);
                         Login.setF(false);
                         Login.setT("Faça login para ter suas tabelas salvas");
-                        Login.setAtual(Login());
+                        Login.setAtual(Usuario(id: 0, 
+                        username: "", senha: "", pagoVersaoPro: false, telefone: "", email: "", userId: 0));
                         Login.setDratual([["Início",Comeco(),Icons.start],["Tabelas salvas",Login.nuv(Login.getF),Icons.cloud],["Tabela",Tabela(),Icons.table_chart],["Login",Tela1(),Icons.app_registration],["Cadastro",Tela2(),Icons.login]]);
                         Navigator.pushReplacement(context, MaterialPageRoute(builder: 
                         (context) => Tela1()));

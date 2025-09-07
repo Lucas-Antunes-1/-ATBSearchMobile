@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/BackEnd.dart';
 import 'package:flutter_application_1/apresentacao.dart';
 import 'package:flutter_application_1/contas.dart';
 import 'package:flutter_application_1/dados.dart';
@@ -15,9 +16,9 @@ class Tela2 extends StatefulWidget {
 
 class _Tela1State extends State<Tela2> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _email = TextEditingController(text: "gmail@gmail.com");
-  final TextEditingController _senha = TextEditingController(text: "123456");
-  final TextEditingController _nome = TextEditingController(text: "nome");
+  final TextEditingController _email = TextEditingController();
+  final TextEditingController _senha = TextEditingController();
+  final TextEditingController _nome = TextEditingController();
   final TextEditingController _telefone = TextEditingController();
     static final RegExp phoneRegex = RegExp(
     r'^\(\d{2}\)\s\d{4,5}-\d{4}$',
@@ -69,7 +70,8 @@ RegExp emailRegex = RegExp(
                         Login.setH(0);
                         Login.setF(false);
                         Login.setT("Faça login para ter suas tabelas salvas");
-                        Login.setAtual(Login());
+                        Login.setAtual(Usuario(id: 0, 
+                        username: "", senha: "", pagoVersaoPro: false, telefone: "", email: "", userId: 0));
                         Login.ls(false);
                         Login.setDratual([["Início",Comeco(),Icons.start],["Tabelas salvas",Login.nuv(Login.getF),Icons.cloud],["Tabela",Tabela(),Icons.table_chart],["Login",Tela1(),Icons.app_registration],["Cadastro",Tela2(),Icons.login]]);
                         Navigator.pushReplacement(context, MaterialPageRoute(builder: 
@@ -278,10 +280,10 @@ RegExp emailRegex = RegExp(
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                           onPressed: () {
+                           onPressed: () async {
   q = "";
   if (_formKey.currentState!.validate()) {
-    if (Login.getlista.keys.any((login) => login.getEmail == _email.text)) {
+    if ((await Usuario.CarregaUsuarios()).any((login) => login.getEmail == _email.text)) {
       showDialog<String>(
             context: context,
             builder:
@@ -304,22 +306,16 @@ RegExp emailRegex = RegExp(
                 ),
           );
     }
-    else if((Login.getlista.keys.any((login) => login.getTelefone == _telefone.text))&&(_telefone.text!=""))
+    else if(((await Usuario.CarregaUsuarios()).any((login) => login.getTelefone == _telefone.text))&&(_telefone.text!=""))
     {
       q= "Este telefone já está cadastrado!";
     }
      else {
-      Login l = Login.dados(
-        _nome.text, 
-        _telefone.text, 
-        _email.text, 
-        _senha.text
-      );
-
-      Login.setAtual(l);
+        Usuario a = Usuario.dados(_nome.text, _senha.text, _email.text, _telefone.text);
+      Login.setAtual(a);
+      Usuario.criarConta(nome: a.getUsername, email: a.getEmail, senha: a.getSenha,telefone: a.getTelefone);
        Login.setT("Sem nenhuma tabela salva");
         Login.ls(true);
-      Login.adiciona(l);
       Login.setDratual([["Início",Comeco(),Icons.start],["Tabelas salvas",Login.nuv(Login.getF),Icons.cloud],["Tabela",Tabela(),Icons.table_chart],["Sua conta",contas(),Icons.face_3]]);
       Login.setH(1);
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Tabela()));

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/BackEnd.dart';
 import 'package:flutter_application_1/apresentacao.dart';
 import 'package:flutter_application_1/dados.dart';
 import 'package:flutter_application_1/tabela.dart';
@@ -14,7 +15,7 @@ class Nuvem2 extends StatefulWidget {
 }
 
 class _NuvemState extends State<Nuvem2> {
-  Login get log => Login.getatual;
+  Usuario get log => Login.getatual;
 
 
   @override
@@ -60,7 +61,10 @@ class _NuvemState extends State<Nuvem2> {
                       onPressed: ()  {
                         Login.ls(false);
                         Login.setH(0);
-                        Login.setAtual(Login());
+                        Login.setAtual(Usuario(id: 0
+                        , username: "", senha: ""
+                        , pagoVersaoPro: false, telefone: "",
+                         email: "", userId: 0));
                         Login.setDratual([["Início",Comeco(),Icons.start],["Tabelas salvas",Login.nuv(Login.getF),Icons.cloud],["Tabela",Tabela(),Icons.table_chart],["Login",Tela1(),Icons.app_registration],["Cadastro",Tela2(),Icons.login]]);
                         Navigator.pushReplacement(context, MaterialPageRoute(builder: 
                         (context) => Tela1()));

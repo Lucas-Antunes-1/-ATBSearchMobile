@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/BackEnd.dart';
 import 'package:flutter_application_1/apresentacao.dart';
 import 'package:flutter_application_1/dados.dart';
 import 'package:flutter_application_1/tela1.dart';
@@ -358,7 +359,8 @@ class _AntibioticScreenState extends State<AntibioticScreen> {
                         Login.setH(0);
                         Login.setF(false);
                         Login.setT("Faça login para ter suas tabelas salvas");
-                        Login.setAtual(Login());
+                        Login.setAtual(Usuario(id: 0, 
+                        username: "", senha: "", pagoVersaoPro: false, telefone: "", email: "", userId: 0));
                         Login.setDratual([["Início",Comeco(),Icons.start],["Tabelas salvas",Login.nuv(Login.getF),Icons.cloud],["Tabela",Tabela(),Icons.table_chart],["Login",Tela1(),Icons.app_registration],["Cadastro",Tela2(),Icons.login]]);
                         Navigator.pushReplacement(context, MaterialPageRoute(builder: 
                         (context) => Tela1()));

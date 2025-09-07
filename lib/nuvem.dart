@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/BackEnd.dart';
 import 'package:flutter_application_1/apresentacao.dart';
 import 'package:flutter_application_1/dados.dart';
 import 'package:flutter_application_1/tabela.dart';
@@ -14,13 +15,31 @@ class Nuvem extends StatefulWidget {
 }
 
 class _NuvemState extends State<Nuvem> {
-  Login get log => Login.getatual;
+  Usuario get log => Login.getatual;
   TextEditingController _c1 = TextEditingController();
 
 
   @override
+  void initState() {  
+     carregarAntibiotico();
+    super.initState();
+ 
+  }
+
+  void carregarAntibiotico() async {
+    final resultado = (await TabelaBackEnd.buscarPorIndice(Login.getatual.getId)).keys.toList();
+    setState(() {
+      listaTabelas = resultado;
+    });
+  }
+
+     List<String> listaTabelas =  [];
+
+
+
+
+  @override
   Widget build(BuildContext context) {
-    final listaTabelas = Login.getlista[log] ?? [];
 
     return Scaffold(
       appBar: AppBar(
@@ -64,7 +83,7 @@ class _NuvemState extends State<Nuvem> {
                         Login.setH(0);
                         Login.setF(false);
                         Login.setT("Faça login para ter suas tabelas salvas");
-                        Login.setAtual(Login());
+                        Login.setAtual(Usuario(id: 0, username: "", senha: "", pagoVersaoPro: false, telefone: "", email: "", userId: 0));
                         Login.setDratual([["Início",Comeco(),Icons.start],["Tabelas salvas",Login.nuv(Login.getF),Icons.cloud],["Tabela",Tabela(),Icons.table_chart],["Login",Tela1(),Icons.app_registration],["Cadastro",Tela2(),Icons.login]]);
                         Navigator.pushReplacement(context, MaterialPageRoute(builder: 
                         (context) => Tela1()));
@@ -79,9 +98,15 @@ class _NuvemState extends State<Nuvem> {
             })
             ,),
             ) ,
+
+
+
                   body: Padding(
         padding: const EdgeInsets.all(20.0),
         child:
+
+
+
          GridView.count(
           crossAxisCount: (MediaQuery.of(context).size.width / 200).floor(),
           mainAxisSpacing: 10,
@@ -129,7 +154,7 @@ class _NuvemState extends State<Nuvem> {
                     ),
                     TextButton(
                       onPressed: ()  {
-                        Login.del(Login.getatual, index);
+                        Login.del(Login.getatual, listaTabelas[index]);
                       Navigator.pop(context);
                        Navigator.pop(context);
                       setState(() {
@@ -160,19 +185,21 @@ class _NuvemState extends State<Nuvem> {
                   ),)),
                   actions: <Widget>[
                     TextButton(
-                      onPressed: ()  {Navigator.pop(context, 'Cancel');
-                      _c1.text=Login.getlista[Login.getatual]![index];
-                      },
-                      child: const Text('Cancelar'),
-                    ),
-                    TextButton(
-                      onPressed: ()  {
-                        Login.novoNome(Login.getatual, index,_c1.text!=""?_c1.text:Login.getlista[Login.getatual]![index]);
-                      Navigator.pop(context);
-                       Navigator.pop(context);
-                      setState(() {
-                      });
-                  },
+                     onPressed: () async {
+  await TabelaBackEnd.renomearTabela(
+    Login.getatual.getId,
+    (await TabelaBackEnd.buscarPorIndice(Login.getatual.getId)).keys.toList()[index],
+    _c1.text != "" ? _c1.text : listaTabelas[index],
+  );
+  _c1.text = '';
+
+  Navigator.pop(context);
+  Navigator.pop(context); 
+
+  final resultado = (await TabelaBackEnd.buscarPorIndice(Login.getatual.getId)).keys.toList();
+  setState(() {
+    listaTabelas = resultado;
+  });},
                       child: const Text('Renomear'),
                     ),
                   ],
@@ -189,7 +216,7 @@ class _NuvemState extends State<Nuvem> {
                   ,child: Text("...",style: TextStyle(fontSize: 16),),)
                   ],),SizedBox(height: 0.25*MediaQuery.of(context).size.width/(MediaQuery.of(context).size.width / 200).floor())
                  , Text(
-                  listaTabelas[index],
+                 ( listaTabelas[index]),
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w500,

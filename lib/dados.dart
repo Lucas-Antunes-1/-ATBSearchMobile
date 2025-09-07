@@ -1,7 +1,9 @@
 
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_1/BackEnd.dart';
 import 'package:flutter_application_1/apresentacao.dart';
 import 'package:flutter_application_1/contas.dart';
 import 'package:flutter_application_1/nuvem.dart';
@@ -9,6 +11,7 @@ import 'package:flutter_application_1/nuvem2.dart';
 import 'package:flutter_application_1/tabela.dart';
 import 'package:flutter_application_1/tela1.dart';
 import 'package:flutter_application_1/tela2.dart';
+import 'package:http/http.dart' as http;
 
 class Login
 {
@@ -28,7 +31,7 @@ class Login
       {
         lis=[["Tabela",Tabela()],["Gerenciar Conta",contas()]];
       }
-      if(!a)
+      else
       {
          lis = [["Tabela",Tabela()],["Login",Tela1()],["Cadastro",Tela2()]];
       }
@@ -41,59 +44,117 @@ class Login
  String email="";
  String senha="";
  String telefone="";
- static Map<Login,List<String>> _lista= {
-  Login.img("Nata pelé","","email@gmail.com","123456","images/th.jpeg"):["1","2","3"],
-  Login.dados("Louis Felipe","","coiso@gmail.com","123456"):["tabela 1","tabela 2","tabela 3"],
+ 
+  static Future<Map<Usuario,List<String>>> ListaNuv() async
+  {
+      Map<Usuario,List<String>> m={};
+      for(Usuario i in await Usuario.CarregaUsuarios())
+      {
+        m[i]=(await TabelaBackEnd.buscarPorIndice(i.getId)).keys.toList();
+      }
+      return m;
+  }
 
-  };
+
+
   static Image _imgConta = Image.asset("assets/images/th.jpeg");
 
   static Image get getimgConta => _imgConta;
- void setimgConta(String i)
-  {
-    _atual=Login.img(_atual.nome,_atual.telefone,_atual.email,_atual.senha,i);
-
-  }
-
-static acha(Login a)
-{
-  for(int i=0;i<_lista.keys.length;i++)
-  {
-      if(_lista.keys.toList()[i].email==a.email)
-      {
-        return _lista.values.toList()[i];
-      }
-  }
-}
-
-static void deletar(Login a)
-{
-  _lista.remove(a);
-}
 
 
-  static List<String>? getNuvem(Login a)
-  {
-    for(Login b in _lista.keys)
+
+
+Future<Map<String, dynamic>> deletar(Usuario a) async {
+  int id = a.getId;
+  try {
+    final url = Uri.parse("http://localhost:8080/apiUsuarios/deletarUsuario/$id");
+    final response = await http.delete(url);
+
+    if (response.statusCode == 200) {
+      return {
+        'success': true,
+        'message': 'Usuário e tabelas associadas deletados com sucesso.',
+        'statusCode': 200
+      };
+    } else if (response.statusCode == 404) {
+      return {
+        'success': false, 
+        'message': 'Usuário não encontrado!',
+        'statusCode': 404
+      };
+    } else {
+      return {
+        'success': false,
+        'message': 'Erro ao deletar usuário: ${response.statusCode}',
+        'statusCode': response.statusCode
+      };
+    }
+  } catch (e) {
+    return {
+      'success': false,
+      'message': 'Erro de conexão: $e',
+      'statusCode': 500
+    };
+  }}
+
+
+  static Future<List<String>?> getNuvem(Login a)
+  async {
+    for(Usuario b in await Usuario.CarregaUsuarios())
     {
       if(b.getEmail==a.getEmail)
       {
-        return _lista[b];
+        return (await TabelaBackEnd.buscarPorIndice(b.getId)).keys.toList();
       }
     }
     return null;
   }
 
-  static void del(Login a,int i)
-  {
-     for(Login b in _lista.keys)
+  static void del(Usuario a,String s)
+ async {
+     for(Usuario b in await Usuario.CarregaUsuarios())
     {
       if(b.getEmail==a.getEmail)
       {
-         _lista[b]!.remove(_lista[b]![i]);
+         deletarTabelaPersonalizada(a.getId,s);
       }
     }
   }
+
+static Future<Map<String, dynamic>> deletarTabelaPersonalizada(int idUsuario, String nomeTabela) async {
+  try {
+    final nomeTabelaEncoded = Uri.encodeComponent(nomeTabela);
+    final url = Uri.parse("http://localhost:8080/TabelasPersonalizadas/$idUsuario/$nomeTabelaEncoded");
+    
+    final response = await http.delete(url);
+
+    if (response.statusCode == 200) {
+      return {
+        'success': true,
+        'message': 'Tabela deletada com sucesso',
+        'statusCode': 200
+      };
+    } else if (response.statusCode == 404) {
+      return {
+        'success': false, 
+        'message': 'Tabela não encontrada',
+        'statusCode': 404
+      };
+    } else {
+      return {
+        'success': false,
+        'message': 'Erro ao deletar tabela: ${response.statusCode}',
+        'statusCode': response.statusCode
+      };
+    }
+  } catch (e) {
+    return {
+      'success': false,
+      'message': 'Erro de conexão: $e',
+      'statusCode': 500
+    };
+  }
+}
 
  static Color _apbar = Color.fromRGBO(0, 100, 148, 1);
 
@@ -132,21 +193,54 @@ static void deletar(Login a)
 
   static List<List<Object>> get getDratual  => _dratual;
 
- static Login _atual = Login();
+ static Usuario _atual = Usuario(id: 0
+ , username: ""
+ , senha: ""
+ , pagoVersaoPro: false
+ , telefone: "", 
+ email: '', userId: 0);
 
-   static Login get getatual => _atual;
+   static Usuario get getatual => _atual;
  
-static void adiciona(Login a)
-{
-  Map<Login,List<String>> k=_lista;
-   k[a]=[""];
-    Login.setlista = k;
-}
- static Map<Login,List<String>> get getlista => _lista;
+ static Future<Usuario?> adiciona(Usuario u) async {
+    try {
+      var url = Uri.parse("http://localhost:8080/apiUsuarios/cadastrarUsuario");
+      var response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({
+          "nome": u.username,  
+          "senha": u.senha,
+          "telefone": u.telefone,
+          "email": u.email,
+          "userId": u.userId
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        var dados = jsonDecode(response.body);
+        return Usuario(
+          id: dados["id"],
+          username: dados["nome"],
+          senha: dados["senha"],
+          pagoVersaoPro: dados["pagoVersaoPro"],
+          telefone: dados["telefone"],
+          email: dados["email"],
+          userId: dados["userId"],
+        );
+      } else {
+        print("Erro ao cadastrar: ${response.body}");
+        return null;
+      }
+    } catch (e) {
+      print("Exceção ao cadastrar: $e");
+      return null;
+    }
+  }
+
 
  get getIMG => caminhoIMG;
  
-  static set setlista(Map<Login,List<String>> v) => _lista = v;
   get getNome => nome;
 
  set setNome( nome) => this.nome = nome;
@@ -164,7 +258,12 @@ static void adiciona(Login a)
 Login.img(this.nome,this.telefone,this.email,this.senha,this.caminhoIMG);
  Login();
 
-  static void setAtual(Login a) {_atual=a;}
+  static void setAtual(Usuario a) {_atual=a;}
+
+  static Future<void> AtualizaAtual()
+  async {
+    _atual=await Usuario.buscarPorIndice(_atual.getId);
+  }
 
   static void setDratual(List<List<Object>> list) {_dratual=list;}
 
@@ -182,34 +281,6 @@ Login.img(this.nome,this.telefone,this.email,this.senha,this.caminhoIMG);
   }
 }
 
- void setnome(String a)
-{
-  _atual.nome=a;
-}
-
-  void setEmail(String text) {
-    _atual.email = text;
-    }
-
-  void setTelefone(String text) {
-    _atual.telefone = text;
-  }
-
-  void setSenha(String text) {
-
-    _atual.senha =text;
-  }
-
-  static void novoNome(Login a, int index, String s) {
-    
-     for(Login b in _lista.keys)
-    {
-      if(b.getEmail==a.getEmail)
-      {
-         _lista[b]![index]=s;
-      }
-    }
-  }
 
 
 
