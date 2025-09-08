@@ -50,8 +50,15 @@ class Login
       Map<Usuario,List<String>> m={};
       for(Usuario i in await Usuario.CarregaUsuarios())
       {
-        m[i]=(await TabelaBackEnd.buscarPorIndice(i.getId)).keys.toList();
-      }
+        if(((await TabelaBackEnd.buscarPorIndice(i.getId)).keys.toList().isNotEmpty))
+{        m[i]=(await TabelaBackEnd.buscarPorIndice(i.getId)).keys.toList();
+} 
+else
+{
+  m[i]=[];
+}
+
+     }
       return m;
   }
 
@@ -262,7 +269,8 @@ Login.img(this.nome,this.telefone,this.email,this.senha,this.caminhoIMG);
 
   static Future<void> AtualizaAtual()
   async {
-    _atual=await Usuario.buscarPorIndice(_atual.getId);
+    print(_atual.getId);
+    _atual=await Usuario.buscarPorIndiceU(_atual.getId);
   }
 
   static void setDratual(List<List<Object>> list) {_dratual=list;}

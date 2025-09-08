@@ -35,17 +35,20 @@ class _ContasState extends State<contas> {
   }
 
 void carregarAntibiotico() async {
-  final resultado =
-      (await TabelaBackEnd.buscarPorIndice(Login.getatual.getId)).keys.toList();
+  final resultado = (await TabelaBackEnd.buscarPorIndice(Login.getatual.getId)).keys.toList();
+      final a = await Usuario.CarregaUsuarios();
+      final b=await Login.ListaNuv();
   setState(() {
+    usuarios=a;
     listaTabelas = resultado;
+    m=b;
   });
 }
 
-
+    List<Usuario> usuarios=[];
      List<String> listaTabelas =  [];
     Usuario u=Login.getatual;
-
+    Map<Usuario,List<String>> m={};
 
 RegExp emailRegex = RegExp(
   r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
@@ -187,6 +190,7 @@ Row(mainAxisAlignment: MainAxisAlignment.center,children: [
                             hintText: 'Digite sua senha',
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
+
                             ),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -212,17 +216,17 @@ Row(mainAxisAlignment: MainAxisAlignment.center,children: [
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed: () async {
+                            onPressed: ()  {
                               if (_formKey.currentState!.validate()) {
 
-                                  for(Usuario a in await Usuario.CarregaUsuarios())
+                                  for(Usuario a in  usuarios)
                                   {
                                     if(((a.getEmail==_email.text)||(a.getTelefone==_email.text))&&(a.getSenha==_senha2.text))
                                     {
                                        y=false;
                                      Login.setAtual(a);
                                      Login.setH(1);
-                                    if((await TabelaBackEnd.buscarPorIndice(a.getId)).keys.toList().isEmpty)
+                                    if(m[a]!.isEmpty)
                                     {
                                       Login.setF(true);
                                       Login.setJ(0);
@@ -692,7 +696,7 @@ Form(child:
       );
   }
 
-
+/*
   void _mostrarDialogoImagem() {
     showDialog(
       context: context,
@@ -742,5 +746,5 @@ onChanged: (value) {
         ],
       ),
     );
-  }
+  }*/
 }

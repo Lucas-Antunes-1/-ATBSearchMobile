@@ -28,6 +28,25 @@ RegExp emailRegex = RegExp(
   caseSensitive: false,
 );
  String q = "";
+List<Usuario> usuarios=[];
+
+ @override
+  void initState() {  
+     carregarAntibiotico();
+    super.initState();
+ 
+  }
+
+  void carregarAntibiotico() async {
+    final resultado = await Usuario.CarregaUsuarios();
+    setState(() {
+      usuarios = resultado;
+    });
+  }
+
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -280,10 +299,10 @@ RegExp emailRegex = RegExp(
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                           onPressed: () async {
+                           onPressed: ()  {
   q = "";
   if (_formKey.currentState!.validate()) {
-    if ((await Usuario.CarregaUsuarios()).any((login) => login.getEmail == _email.text)) {
+    if (usuarios.any((login) => login.getEmail == _email.text)) {
       showDialog<String>(
             context: context,
             builder:
@@ -306,7 +325,7 @@ RegExp emailRegex = RegExp(
                 ),
           );
     }
-    else if(((await Usuario.CarregaUsuarios()).any((login) => login.getTelefone == _telefone.text))&&(_telefone.text!=""))
+    else if((usuarios.any((login) => login.getTelefone == _telefone.text))&&(_telefone.text!=""))
     {
       q= "Este telefone já está cadastrado!";
     }

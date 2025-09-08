@@ -175,6 +175,13 @@ final int idUsuario;
     required this.listaAnt, 
   required this.idUsuario  });
   
+
+
+
+
+
+
+
   Map<String, List<Antibiotico>> get getlistaAnt => listaAnt;
 
   set listaAnt(Map<String, List<Antibiotico>> novaLista) {
@@ -750,7 +757,7 @@ static Future<Map<String, dynamic>> mudarNomeUsuarioValidado(int idUsuario, Stri
   }
 }
 
-  static Future<Usuario> buscarPorIndice(int index) async {
+  static Future<Usuario> buscarPorIndiceU(int index) async {
     try {
       var url = Uri.parse("http://localhost:8080/apiUsuarios/Usuarios/$index");
       var response = await http.get(url);
@@ -768,7 +775,7 @@ static Future<Map<String, dynamic>> mudarNomeUsuarioValidado(int idUsuario, Stri
         throw Exception('Falha ao carregar dados da API: ${response.statusCode}');
       }
     } catch (e) {
-      print('Erro ao buscar antibiótico: $e');
+      print('Erro ao buscar usuario: $e');
       return Usuario(id: 0
       , username: "",
        senha: "",
