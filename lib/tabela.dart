@@ -53,6 +53,8 @@ class Antibiotic {
     required this.gramNegative,
     required this.morphology,
   });
+
+ get getid=> id;
 }
 
 class AntibioticScreen extends StatefulWidget {

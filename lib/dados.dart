@@ -12,9 +12,45 @@ import 'package:flutter_application_1/tabela.dart';
 import 'package:flutter_application_1/tela1.dart';
 import 'package:flutter_application_1/tela2.dart';
 import 'package:http/http.dart' as http;
+import 'package:crypto/crypto.dart';
 
 class Login
 {
+
+  static List<Usuario> usuarios =[];
+  static List<String> listaTabelas=[];
+  static Map<String,List<Antibiotic>> mapaTabelas=Map();
+  static get getMapTabelas=>mapaTabelas;
+
+  static get getTabelas=>listaTabelas;
+
+  static get getUsuarios=>usuarios;
+
+   static Future<void> carregar() async{
+    usuarios=await Usuario.CarregaUsuarios();
+    await carregaAnt();
+    
+    }
+static Future<void> carregarUsuario() async {
+  final resultado = await TabelaBackEnd.buscarPorIndice(Login.getatual.getId);
+  if (resultado.isNotEmpty) {
+    listaTabelas = resultado.keys.toList();
+    mapaTabelas = resultado;
+    print(mapaTabelas.keys.length);
+  } else {
+    listaTabelas = [];
+    mapaTabelas = {};
+  }
+}
+
+
+  static List<Antibiotic> _tabelafiltrada=[];
+
+   static void setfiltrada(List<Antibiotic> a)
+   {_tabelafiltrada=a;}
+
+ static get getfiltrada=>_tabelafiltrada;
+
     static List<List<Object>> lis = [["Tabela",Tabela()],["Login",Tela1()],["Cadastro",Tela2()]];
 
     static int i = 100;
@@ -36,6 +72,16 @@ class Login
          lis = [["Tabela",Tabela()],["Login",Tela1()],["Cadastro",Tela2()]];
       }
     }
+
+
+   static List<Antibiotic> antibioticos=[];
+
+   static Future<void> carregaAnt() async{
+      antibioticos=await Backend.carregarLista();
+    }
+
+    static get getAnti=>antibioticos;
+
 
   static List<List<Object>> get getLs => lis;
 
@@ -117,15 +163,10 @@ Future<Map<String, dynamic>> deletar(Usuario a) async {
     return null;
   }
 
-  static void del(Usuario a,String s)
+  static Future<void> del(Usuario a,String s)
  async {
-     for(Usuario b in await Usuario.CarregaUsuarios())
-    {
-      if(b.getEmail==a.getEmail)
-      {
-         deletarTabelaPersonalizada(a.getId,s);
-      }
-    }
+
+        await deletarTabelaPersonalizada(a.getId,s);
   }
 
 static Future<Map<String, dynamic>> deletarTabelaPersonalizada(int idUsuario, String nomeTabela) async {

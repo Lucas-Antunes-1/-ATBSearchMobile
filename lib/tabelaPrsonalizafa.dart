@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/BackEnd.dart';
-import 'package:flutter_application_1/apresentacao.dart';
 import 'package:flutter_application_1/dados.dart';
-import 'package:flutter_application_1/tela1.dart';
-import 'package:flutter_application_1/tela2.dart';
-import 'package:flutter_application_1/tabela.dart'; 
+import 'package:flutter_application_1/nuvem.dart';
+import 'package:flutter_application_1/tabela.dart';
 
+void main() => runApp(const TabelaP());
 
-void main() => runApp(const TabelaNuv());
+class TabelaP extends StatelessWidget {
+  const TabelaP({super.key});
 
-class TabelaNuv extends StatelessWidget {
-  const TabelaNuv({ super.key});
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -32,38 +30,25 @@ class TabelaNuv extends StatelessWidget {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
         ),
       ),
-      home: AntibioticScreen(),
+      home: const AntibioticScreen(),
     );
   }
 }
 
 
-
 class AntibioticScreen extends StatefulWidget {
   const AntibioticScreen({super.key});
+
   @override
   State<AntibioticScreen> createState() => _AntibioticScreenState();
 }
 
 class _AntibioticScreenState extends State<AntibioticScreen> {
-
-
- @override
-  void initState() {  
-     carregarAntibiotico();
-    super.initState();
- 
-  }
-
-  void carregarAntibiotico()  {
- //   final a=Login.getatual.getId;
-  // final resultado = await TabelaBackEnd.buscarPorIndice(a);
-
-  }
+    List<Antibiotic> m=[];
+    List<Antibiotic> antibiotics = Login.getAnti;
 
 
 
-   List<Antibiotic> antibiotics =Login.getfiltrada;
 
   final List<String> antibioticTypes = ["Macrolídeos", "Penicilinas","Cefalosporinas","Carbapenêmicos","Aminoglicosídeos","Quinolonas","Anfenicóis","Sulfonamidas","Glicopeptídeos","Nitroimidazólicos","Licosamidas","Polimixinas","Oxazolidinona","Gligilciclina","Antituberculosos"];
   final List<String> morphologyOptions = ["Cocos", "Bacilos", "Cocos e Bacilos"];
@@ -73,77 +58,65 @@ class _AntibioticScreenState extends State<AntibioticScreen> {
   bool? gramPositiveFilter;
   bool? gramNegativeFilter;
   String? morphologyFilter;
+  TextEditingController c1=TextEditingController();
 
   List<Antibiotic> get filteredAntibiotics => antibiotics.where((a) {
-        return a.name.toLowerCase().contains(nameFilter.toLowerCase()) &&
+        return (a.name.toLowerCase().contains(nameFilter.toLowerCase())&&!(excluido.contains(a))) &&
             (typeFilter == null || a.type == typeFilter) &&
             (gramPositiveFilter == null || a.gramPositive == gramPositiveFilter) &&
             (gramNegativeFilter == null || a.gramNegative == gramNegativeFilter) &&
             (morphologyFilter == null || a.morphology == morphologyFilter);
       }).toList();
 
+
+      List<Antibiotic> excluido=[];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Filtrar Antibióticos'),backgroundColor: Login.getap,),
-   drawer: Drawer(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: <Widget>[
-            const DrawerHeader(
-              decoration: BoxDecoration(color: Colors.blue),
-              child: Text('ATBSearch', style: TextStyle(color: Colors.white, fontSize: 24)),
-            )]+List.generate(Login.getDratual.length, (index){
-              return ListTile(
-              leading: Icon(Login.getDratual[index][2] as IconData?),
-              title: Text(Login.getDratual[index][0] as String),
-              onTap: () {
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (context) => Login.getDratual[index][1] as Widget)
-                );
+      appBar: AppBar(title: const Text('Filtrar Antibióticos',style: TextStyle(color: Colors.white),),backgroundColor: Login.getap,actions: [
+        IconButton(onPressed: () {
+          showDialog<String>(context: context, 
+          builder: (BuildContext context)=>
+            AlertDialog(
+              content: Text("                                Deseja criar nova tabela?"),
+            actions: <Widget>[
+              SizedBox(height: 30,),
+              ElevatedButton(onPressed: () {
+                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=>Tabela()));
+              }, child: Text("Descartar")),
+              ElevatedButton(onPressed:   () => Navigator.pop(context), child: Text("Continuar editando")),
+              ElevatedButton(onPressed: () async {
+                List<int> b=[];
+
+                if(c1.text.isNotEmpty&&!(Login.getMapTabelas).containsKey(c1.text)){  
+                   b = filteredAntibiotics.map((a) => a.id).toList();
+                await TabelaBackEnd.criarTabelaPersonalizada(idUsuario: Login.getatual.getId, nomeTabela: c1.text, idsAntibioticos: b);
+                await Login.carregarUsuario();
+                Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=>Nuvem()));
+              }
+              else{
+                Navigator.pop(context);
+                showDialog<String>(context: context, builder: 
+                (BuildContext context)=>
+                AlertDialog(content: Text("Nome de tabela já em uso"),
+                actions: [ElevatedButton(onPressed:  () => Navigator.pop(context), child: Text("OK"))],));
+              }
+              
+              
               },
-            );
-            })+List.generate(Login.getH,(index){
-              return ListTile(
-              leading: Icon(Icons.logout),
-              title: Text("Sair"),
-              onTap: () {
-                 showDialog<String>(
-            context: context,
-            builder:
-                (BuildContext context) => AlertDialog(
-                  title: const Text('Deseja sair mesmo?'),
-                  actions: <Widget>[
-                    TextButton(
-                      onPressed: () => Navigator.pop(context, 'Cancel'),
-                      child: const Text('Continuar logado'),
-                    ),
-                    TextButton(
-                      onPressed: ()  {
-                        Login.ls(false);
-                        Login.setH(0);
-                        Login.setF(false);
-                        Login.setT("Faça login para ter suas tabelas salvas");
-                        Login.setAtual(Usuario(id: 0, 
-                        username: "", senha: "", pagoVersaoPro: false, telefone: "", email: "", userId: 0));
-                        Login.setDratual([["Início",Comeco(),Icons.start],["Tabelas salvas",Login.nuv(Login.getF),Icons.cloud],["Tabela",Tabela(),Icons.table_chart],["Login",Tela1(),Icons.app_registration],["Cadastro",Tela2(),Icons.login]]);
-                        Navigator.pushReplacement(context, MaterialPageRoute(builder: 
-                        (context) => Tela1()));
-                  },
-                      child: const Text('Sair'),
-                    ),
-                  ],
-                ),
-          );
-              },
-            );
-            })
-            ,),
-            )   ,
+              
+               child: Text("Finalizar")),
+            ],
+          )
+          );      
+        }, icon: Icon(Icons.done,),color: Colors.green,)],),
                body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
+            TextField(controller: c1,decoration: InputDecoration(labelText: "Nome da sua tabela:" ),),        const SizedBox(height: 12),
+
             _buildFilters(),
             const SizedBox(height: 20),
             Expanded(
@@ -159,6 +132,7 @@ class _AntibioticScreenState extends State<AntibioticScreen> {
                     scrollDirection: Axis.horizontal,
                     child:  DataTable(
                     columns: const [
+                      DataColumn(label: Text("")),
                       DataColumn(label: Text('Nome', style: TextStyle(fontWeight: FontWeight.bold))),
                       DataColumn(label: Text('Tipo', style: TextStyle(fontWeight: FontWeight.bold))),
                       DataColumn(label: Text('Ataca Gram +', style: TextStyle(fontWeight: FontWeight.bold))),
@@ -167,13 +141,35 @@ class _AntibioticScreenState extends State<AntibioticScreen> {
                     ],
                     rows: filteredAntibiotics.map((a) {
                       return DataRow(cells: [
+                        DataCell(IconButton(onPressed:  () {
+                         excluido.add(a);
+                          setState(() {
+                            
+                          });
+                        }, icon: Icon(Icons.delete))),
                         DataCell(Text(a.name)),
                         DataCell(Text(a.type)),
                         DataCell(Text(a.gramPositive ? "Sim" : "Não")),
                         DataCell(Text(a.gramNegative ? "Sim" : "Não")),
                         DataCell(Text(a.morphology)),
                       ]);
-                    }).toList(),
+                    }).toList()+excluido.map((a){
+                      return DataRow(cells: [
+                        DataCell(IconButton(onPressed:  () {
+                         excluido.remove(a);
+
+                          setState(() {
+                            
+                          });
+                        }, icon: Icon(Icons.add))),
+                        DataCell(Text(a.name)),
+                        DataCell(Text(a.type)),
+                        DataCell(Text(a.gramPositive ? "Sim" : "Não")),
+                        DataCell(Text(a.gramNegative ? "Sim" : "Não")),
+                        DataCell(Text(a.morphology)),
+                      ]);
+                    }).toList()
+      ,
                   )),
                 ),
               ),

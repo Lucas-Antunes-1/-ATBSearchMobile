@@ -196,6 +196,61 @@ final int idUsuario;
   }
 
 
+  static Future<Map<String, dynamic>> criarTabelaPersonalizada({
+    required int idUsuario,
+    required String nomeTabela,
+    required List<int> idsAntibioticos,
+  }) async {
+    try {
+      final url = Uri.parse("http://localhost:8080/TabelasPersonalizadas/criar");
+
+      final corpo = jsonEncode({
+        'idUsuario': idUsuario,
+        'nomeTabela': nomeTabela,
+        'ids': idsAntibioticos,
+      });
+
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: corpo,
+      );
+
+      if (response.statusCode == 201) {
+        return {
+          'success': true,
+          'message': 'Tabela criada com sucesso!',
+          'statusCode': 201,
+        };
+      } else if (response.statusCode == 400) {
+        return {
+          'success': false,
+          'message': 'Dados inválidos: ${response.body}',
+          'statusCode': 400,
+        };
+      } else if (response.statusCode == 409) {
+        return {
+          'success': false,
+          'message': 'Já existe uma tabela com esse nome',
+          'statusCode': 409,
+        };
+      } else {
+        return {
+          'success': false,
+          'message': 'Erro ao criar tabela: ${response.statusCode}',
+          'statusCode': response.statusCode,
+          'body': response.body,
+        };
+      }
+    } catch (e) {
+      return {
+        'success': false,
+        'message': 'Erro de conexão: $e',
+        'statusCode': 500,
+      };
+    }
+  }
+
 static Future<Map<String, dynamic>> renomearTabela(int idUsuario, String nomeAntigo, String nomeNovo) async {
   try {
     final url = Uri.parse("http://localhost:8080/TabelasPersonalizadas/renomear");
@@ -250,7 +305,6 @@ static Future<Map<String, dynamic>> renomearTabela(int idUsuario, String nomeAnt
     };
   }
 }
-
 
 static Future<Map<String, List<Antibiotic>>> buscarPorIndice(int index) async {
   try {
@@ -670,7 +724,7 @@ static Future<Map<String, dynamic>> mudarNomeUsuarioValidado(int idUsuario, Stri
     final response = await http.put(
       url,
       headers: {'Content-Type': 'text/plain'},
-      body: novoNome.trim(), // Remove espaços em branco extras
+      body: novoNome.trim(),
     );
 
     if (response.statusCode == 200) {

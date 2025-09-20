@@ -28,26 +28,9 @@ RegExp emailRegex = RegExp(
   caseSensitive: false,
 );
  String q = "";
-List<Usuario> usuarios=[];
+List<Usuario> usuarios=Login.getUsuarios;
 
- @override
-  void initState() {  
-     carregarAntibiotico();
-    super.initState();
  
-  }
-
-  void carregarAntibiotico() async {
-    final resultado = await Usuario.CarregaUsuarios();
-    setState(() {
-      usuarios = resultado;
-    });
-  }
-
-
-
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -299,7 +282,7 @@ List<Usuario> usuarios=[];
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                           onPressed: ()  {
+                           onPressed: ()  async {
   q = "";
   if (_formKey.currentState!.validate()) {
     if (usuarios.any((login) => login.getEmail == _email.text)) {
@@ -333,14 +316,13 @@ List<Usuario> usuarios=[];
         Usuario a = Usuario.dados(_nome.text, _senha.text, _email.text, _telefone.text);
       Login.setAtual(a);
       Usuario.criarConta(nome: a.getUsername, email: a.getEmail, senha: a.getSenha,telefone: a.getTelefone);
-       Login.setT("Sem nenhuma tabela salva");
-        Login.ls(true);
+     await Login.carregarUsuario();
+  Login.setF(true);
+          Login.ls(true);
       Login.setDratual([["Início",Comeco(),Icons.start],["Tabelas salvas",Login.nuv(Login.getF),Icons.cloud],["Tabela",Tabela(),Icons.table_chart],["Sua conta",contas(),Icons.face_3]]);
       Login.setH(1);
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Tabela()));
     }
-    
-
   }
   setState(() {});
 },

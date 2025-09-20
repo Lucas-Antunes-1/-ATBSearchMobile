@@ -13,8 +13,6 @@ class _ComecoState extends State<Comeco>{
   List<List<Object>> lis = Login.getLs;
   var a;
 
-
-
   @override
   Widget build(BuildContext context)  {
     return Scaffold(

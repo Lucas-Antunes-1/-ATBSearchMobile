@@ -3,6 +3,8 @@ import 'package:flutter_application_1/BackEnd.dart';
 import 'package:flutter_application_1/apresentacao.dart';
 import 'package:flutter_application_1/dados.dart';
 import 'package:flutter_application_1/tabela.dart';
+import 'package:flutter_application_1/tabelaNuv.dart';
+import 'package:flutter_application_1/tabelaPrsonalizafa.dart';
 import 'package:flutter_application_1/tela1.dart';
 import 'package:flutter_application_1/tela2.dart';
 
@@ -19,27 +21,14 @@ class _NuvemState extends State<Nuvem> {
   TextEditingController _c1 = TextEditingController();
 
 
-  @override
-  void initState() {  
-     carregarAntibiotico();
-    super.initState();
- 
-  }
 
-  void carregarAntibiotico() async {
-    final resultado = (await TabelaBackEnd.buscarPorIndice(Login.getatual.getId)).keys.toList();
-    setState(() {
-      listaTabelas = resultado;
-    });
-  }
-
-     List<String> listaTabelas =  [];
-
-
-
+  
 
   @override
   Widget build(BuildContext context) {
+
+    Map<String,List<Antibiotic>> tabelas=Login.getMapTabelas;
+     List<String> listaTabelas =  Login.getTabelas;
 
     return Scaffold(
       appBar: AppBar(
@@ -113,7 +102,9 @@ class _NuvemState extends State<Nuvem> {
           crossAxisSpacing: 10,
           children: List.generate(
             listaTabelas.length,
-            (index) => Container(
+            (index) => 
+            GestureDetector(child: 
+            Container(
               padding: const EdgeInsets.all(15),
               decoration: BoxDecoration(
                 color: Colors.green,
@@ -153,13 +144,17 @@ class _NuvemState extends State<Nuvem> {
                       child: const Text('Não deletar'),
                     ),
                     TextButton(
-                      onPressed: ()  {
-                        Login.del(Login.getatual, listaTabelas[index]);
+                      onPressed: ()  async {
+                       await Login.del(Login.getatual, listaTabelas[index]);
                       Navigator.pop(context);
                        Navigator.pop(context);
-                      setState(() {
-                      });
-                  },
+                      await Login.carregarUsuario();
+setState(() {
+  listaTabelas = Login.getTabelas;
+  tabelas = Login.getMapTabelas;
+});     
+
+             },
                       child: const Text('Deletar'),
                     ),
                   ],
@@ -188,7 +183,7 @@ class _NuvemState extends State<Nuvem> {
                      onPressed: () async {
   await TabelaBackEnd.renomearTabela(
     Login.getatual.getId,
-    (await TabelaBackEnd.buscarPorIndice(Login.getatual.getId)).keys.toList()[index],
+    listaTabelas[index],
     _c1.text != "" ? _c1.text : listaTabelas[index],
   );
   _c1.text = '';
@@ -196,10 +191,14 @@ class _NuvemState extends State<Nuvem> {
   Navigator.pop(context);
   Navigator.pop(context); 
 
-  final resultado = (await TabelaBackEnd.buscarPorIndice(Login.getatual.getId)).keys.toList();
-  setState(() {
-    listaTabelas = resultado;
-  });},
+ await Login.carregarUsuario();
+setState(() {
+  listaTabelas = Login.getTabelas;
+  tabelas = Login.getMapTabelas;
+}); 
+
+
+ },
                       child: const Text('Renomear'),
                     ),
                   ],
@@ -215,7 +214,8 @@ class _NuvemState extends State<Nuvem> {
     }
                   ,child: Text("...",style: TextStyle(fontSize: 16),),)
                   ],),SizedBox(height: 0.25*MediaQuery.of(context).size.width/(MediaQuery.of(context).size.width / 200).floor())
-                 , Text(
+                 ,
+                 Text(
                  ( listaTabelas[index]),
                   style: const TextStyle(
                     fontSize: 16,
@@ -226,12 +226,32 @@ class _NuvemState extends State<Nuvem> {
 
 
               ),
-            ),
+            ),onTap: () {
+              Login.setfiltrada(tabelas[listaTabelas[index]]??[]);
+              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=>TabelaNuv()));
+            },
           ),
-        ),
+          )+[
+           GestureDetector(child:    Container(
+              padding: const EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                color: Colors.white70,
+                border: Border.all(width: 5,color: Colors.green),
+                borderRadius: BorderRadius.circular(10),
+                
+              ) ,
+              child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center,
+              children: [Text("+",style: TextStyle(color: Colors.green,fontSize: 40),)],),),
+        ) ,onTap: () {
+         Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=>TabelaP()));
+        },) ,
+        
+        
+        
+        ],
        
       ),
       
-    );
+    ));
   }
 }

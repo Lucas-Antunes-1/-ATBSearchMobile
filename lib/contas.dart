@@ -26,29 +26,9 @@ class _ContasState extends State<contas> {
   final TextEditingController _senha2 = TextEditingController();
    String _imagemCaminho = "images/th.jpeg";
   bool y=true;
-
-  @override
-  void initState() {  
-     carregarAntibiotico();
-    super.initState();
- 
-  }
-
-void carregarAntibiotico() async {
-  final resultado = (await TabelaBackEnd.buscarPorIndice(Login.getatual.getId)).keys.toList();
-      final a = await Usuario.CarregaUsuarios();
-      final b=await Login.ListaNuv();
-  setState(() {
-    usuarios=a;
-    listaTabelas = resultado;
-    m=b;
-  });
-}
-
-    List<Usuario> usuarios=[];
-     List<String> listaTabelas =  [];
+    List<Usuario> usuarios=Login.getUsuarios;
+     List<String> listaTabelas =  Login.getTabelas;
     Usuario u=Login.getatual;
-    Map<Usuario,List<String>> m={};
 
 RegExp emailRegex = RegExp(
   r"^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$",
@@ -226,11 +206,8 @@ Row(mainAxisAlignment: MainAxisAlignment.center,children: [
                                        y=false;
                                      Login.setAtual(a);
                                      Login.setH(1);
-                                    if(m[a]!.isEmpty)
-                                    {
                                       Login.setF(true);
                                       Login.setJ(0);
-                                    }
                                     _senha2.text="";
                                     Login.setDratual([["Início",Comeco(),Icons.start],["Tabelas salvas",Login.nuv(Login.getF),Icons.cloud],["Tabela",Tabela(),Icons.table_chart],["Sua conta",contas(),Icons.face_3]]);
                                       Navigator.pushReplacement(context, 
@@ -665,6 +642,8 @@ Form(child:
                         Login.setAtual(Usuario(id: 0, 
                         username: "", senha: "", pagoVersaoPro: false, telefone: "", email: "", userId: 0));
                         Login.setDratual([["Início",Comeco(),Icons.start],["Tabelas salvas",Login.nuv(Login.getF),Icons.cloud],["Tabela",Tabela(),Icons.table_chart],["Login",Tela1(),Icons.app_registration],["Cadastro",Tela2(),Icons.login]]);
+                       await Login.carregarUsuario();
+                       await Login.carregar();
                         Navigator.pushReplacement(context, MaterialPageRoute(builder: 
                         (context) => Tela1()));
                         }

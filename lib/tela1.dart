@@ -30,23 +30,9 @@ RegExp emailRegex = RegExp(
   int h=0;
   bool y=true;
 
-  List<Usuario> usuarios=[];
+  List<Usuario> usuarios=Login.getUsuarios;
 
- @override
-  void initState() {  
-     carregarAntibiotico();
-    super.initState();
  
-  }
-
-  void carregarAntibiotico() async {
-    final resultado = await Usuario.CarregaUsuarios();
-    setState(() {
-      usuarios = resultado;
-    });
-  }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -232,12 +218,11 @@ RegExp emailRegex = RegExp(
                                       y=false;
                                       Login.ls(true);
                                      Login.setAtual(a);
+                                     
+                                    await Login.carregarUsuario();
                                      Login.setH(1);
-                                    if((await TabelaBackEnd.buscarPorIndice(a.getId)).isNotEmpty)
-                                    {
                                       Login.setF(true);
                                       Login.setJ(0);
-                                    }
                                     Login.setDratual([["Início",Comeco(),Icons.start],["Tabelas salvas",Login.nuv(Login.getF),Icons.cloud],["Tabela",Tabela(),Icons.table_chart],["Sua conta",contas(),Icons.face_3]]);
                                       Navigator.pushReplacement(context, 
                                     MaterialPageRoute(builder: 

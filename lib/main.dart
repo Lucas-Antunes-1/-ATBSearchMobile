@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/BackEnd.dart';
 import 'package:flutter_application_1/apresentacao.dart';
-import 'package:http/http.dart' as http;
+import 'package:flutter_application_1/dados.dart';
 void main() async {
   runApp(const MyApp());
 }
@@ -12,7 +11,7 @@ class MyApp extends StatelessWidget {
 
 
   Widget build(BuildContext context) {
-
+    Login.carregar();
     return MaterialApp(
     debugShowCheckedModeBanner: false, 
       home: Comeco(),
